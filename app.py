@@ -9,19 +9,16 @@ st.set_page_config(
 )
 
 # ---------------- API KEY ----------------
-genai.configure(api_key=st.secrets["geminiapi_key"])
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ---------------- MODEL ----------------
+# ---------------- MODEL (FREE TIER SAFE) ----------------
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-if "chat" not in st.session_state:
-    st.session_state.chat = model.start_chat(history=[])
-
-# ---------------- UI (PREMIUM) ----------------
+# ---------------- UI ----------------
 st.markdown("""
 <style>
 
-/* -------- FULL BACKGROUND -------- */
+/* FULL BACKGROUND */
 .stApp {
     background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)),
                 url("https://images.unsplash.com/photo-1639322537228-f710d846310a");
@@ -30,15 +27,7 @@ st.markdown("""
     background-attachment: fixed;
 }
 
-/* Remove padding */
-.block-container {
-    padding: 1rem !important;
-}
-
-/* Hide header */
-header {visibility: hidden;}
-
-/* -------- GLASS CONTAINER -------- */
+/* GLASS CONTAINER */
 .main-box {
     max-width: 900px;
     margin: auto;
@@ -50,7 +39,7 @@ header {visibility: hidden;}
     backdrop-filter: blur(12px);
 }
 
-/* -------- TITLE -------- */
+/* TITLE */
 .title {
     text-align: center;
     color: white;
@@ -65,7 +54,7 @@ header {visibility: hidden;}
     margin-bottom: 15px;
 }
 
-/* -------- CHAT -------- */
+/* CHAT */
 .user-msg {
     background: linear-gradient(135deg, #4facfe, #00f2fe);
     color: white;
@@ -92,7 +81,7 @@ header {visibility: hidden;}
 st.markdown('<div class="main-box">', unsafe_allow_html=True)
 
 st.markdown('<div class="title">💰 Finance Gemini Chatbot</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Ask anything about finance, accounting, GST, investments</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Ask about finance, GST, accounting, investments</div>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -129,11 +118,12 @@ if user_input:
     try:
         full_prompt = system_prompt + "\nUser: " + user_input
 
-        response = st.session_state.chat.send_message(full_prompt)
-        bot_reply = response.text
+        response = model.generate_content(full_prompt)
+
+        bot_reply = response.text if response.text else "No response generated"
 
     except Exception as e:
-        bot_reply = "⚠️ Error occurred. Please check API key or try again."
+        bot_reply = f"⚠️ Error: {str(e)}"
 
     st.session_state.messages.append(("bot", bot_reply))
     st.rerun()
