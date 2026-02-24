@@ -8,11 +8,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- API KEY ----------------
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# ---------------- MODEL (FREE TIER SAFE) ----------------
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("models/gemini-1.5-flash")
 
 # ---------------- UI ----------------
 st.markdown("""
